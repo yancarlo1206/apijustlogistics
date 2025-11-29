@@ -36,13 +36,15 @@ public class Proceso {
 	@Size(max = 20, min = 2, message = "El contenedor debe tener entre 2 y 20 caractéres")
 	private String nombrecontenedor ;
 
-	@NotBlank(message = "El tipo de transporte es obligatoria")
-	@Size(max = 25, min = 2, message = "El tipo de transporte  debe tener entre 2 y 25 caractéres")
-	private String tipotransporte;
+	@NotNull(message = "El Tipo de transporte es obligatorio")
+    @ManyToOne
+    @JoinColumn(name = "tipotransporte", referencedColumnName = "id")
+    private TipoTransporte tipotransporte;
 
-	@NotBlank(message = "El estado es obligatorio")
-	@Size(max = 25, min = 2, message = "El estado debe tener entre 2 y 25 caractéres")
-	private String estado;
+	@NotNull(message = "El estado es obligatorio")
+    @ManyToOne
+    @JoinColumn(name = "estado", referencedColumnName = "id")
+    private Estado estado;
 	
 	
 	@NotNull(message = "La fecha finalización es obligatoria")
