@@ -33,9 +33,10 @@ public class LineaTiempo {
     @JoinColumn(name = "proceso", referencedColumnName = "id")
     private Proceso proceso;
 
-	@NotBlank(message = "El estado es obligatorio")
-	@Size(max = 20, min = 2, message = "Estado debe tener entre 2 y 20 caractéres")
-	private String estado ;
+	@NotNull(message = "El estado es obligatorio")
+    @ManyToOne
+    @JoinColumn(name = "estado", referencedColumnName = "id")
+    private Estado estado;
 
 	@NotBlank(message = "La descripcion es obligatoria")
 	@Size(max = 100, min = 2, message = "La descripcion  debe tener entre 2 y 100 caractéres")
