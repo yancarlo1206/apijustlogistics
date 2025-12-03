@@ -1,6 +1,5 @@
 package com.justlogistics.controller;
 
-
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.justlogistics.entity.LineaTiempo;
+import com.justlogistics.repository.LineaTiempoRepository;
+import com.justlogistics.service.ProcesoService;
 import com.justlogistics.response.ApiResponseJust;
 import com.justlogistics.service.LineaTiempoService;
 
@@ -28,6 +29,9 @@ public class LineaTiempoController {
 
 	@Autowired
 	private LineaTiempoService lineaService;
+
+	@Autowired
+	private LineaTiempoRepository lineaRepository;
 
 	@PostMapping
 	public ResponseEntity<ApiResponseJust<?>> guardar(@Valid @RequestBody LineaTiempo request,
@@ -53,8 +57,8 @@ public class LineaTiempoController {
 	public ResponseEntity<ApiResponseJust<?>> listar() {
 		try {
 			List<LineaTiempo> lineaTiempo = lineaService.listar();
-			return ResponseEntity
-					.ok(new ApiResponseJust<>("Linea de tiempo obtenida correctamente.", HttpStatus.OK.value(), lineaTiempo));
+			return ResponseEntity.ok(new ApiResponseJust<>("Linea de tiempo obtenida correctamente.",
+					HttpStatus.OK.value(), lineaTiempo));
 
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -66,7 +70,8 @@ public class LineaTiempoController {
 	public ResponseEntity<ApiResponseJust<?>> get(@PathVariable Integer id) {
 		try {
 			LineaTiempo lineaTiempo = lineaService.get(id);
-			return ResponseEntity.ok(new ApiResponseJust<>("Linea de tiempo encontrada.", HttpStatus.OK.value(), lineaTiempo));
+			return ResponseEntity
+					.ok(new ApiResponseJust<>("Linea de tiempo encontrada.", HttpStatus.OK.value(), lineaTiempo));
 
 		} catch (RuntimeException e) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND)
@@ -79,19 +84,22 @@ public class LineaTiempoController {
 	}
 
 	@PutMapping("/{id}")
-	public ResponseEntity<ApiResponseJust<?>> actualizar(@PathVariable Integer id, @Valid @RequestBody LineaTiempo request,
-			BindingResult bindingResult) {
+	public ResponseEntity<ApiResponseJust<?>> actualizar(@PathVariable Integer id,
+			@Valid @RequestBody LineaTiempo request, BindingResult bindingResult) {
 		try {
 			if (bindingResult.hasErrors()) {
 				String errorMsg = bindingResult.getFieldError().getDefaultMessage();
-				return ResponseEntity.badRequest().body(new ApiResponseJust<>(errorMsg, HttpStatus.BAD_REQUEST.value(), null));
+				return ResponseEntity.badRequest()
+						.body(new ApiResponseJust<>(errorMsg, HttpStatus.BAD_REQUEST.value(), null));
 			}
 
 			LineaTiempo actualizado = lineaService.actualizar(id, request);
-			return ResponseEntity.ok(new ApiResponseJust<>("Linea de tiempo actualizada.", HttpStatus.OK.value(), actualizado));
+			return ResponseEntity
+					.ok(new ApiResponseJust<>("Linea de tiempo actualizada.", HttpStatus.OK.value(), actualizado));
 
 		} catch (RuntimeException e) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiResponseJust<>(e.getMessage(), HttpStatus.NOT_FOUND.value(), null));
+			return ResponseEntity.status(HttpStatus.NOT_FOUND)
+					.body(new ApiResponseJust<>(e.getMessage(), HttpStatus.NOT_FOUND.value(), null));
 
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -105,7 +113,8 @@ public class LineaTiempoController {
 			boolean eliminado = lineaService.eliminar(id);
 
 			if (eliminado) {
-				return ResponseEntity.ok(new ApiResponseJust<>("Linea de tiempo eliminada.", HttpStatus.OK.value(), null));
+				return ResponseEntity
+						.ok(new ApiResponseJust<>("Linea de tiempo eliminada.", HttpStatus.OK.value(), null));
 			} else {
 				return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiResponseJust<>(
 						"Linea de tiempo no encontrado para eliminar.", HttpStatus.NOT_FOUND.value(), null));
@@ -114,6 +123,27 @@ public class LineaTiempoController {
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 					.body(new ApiResponseJust<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value(), null));
+		}
+	}
+
+	@GetMapping("/listPorProceso/{procesoId}")
+	public ResponseEntity<ApiResponseJust<?>> apartamentorPorEdificio(@PathVariable Integer procesoId) {
+
+		try {
+
+			List<LineaTiempo> linea = lineaRepository.findByProcesoId(procesoId);
+
+			if (linea.isEmpty()) {
+				return ResponseEntity.ok(new ApiResponseJust<>("El proceso con ID: " + procesoId + " no tiene linea de tiempo.",
+								HttpStatus.OK.value(), linea));
+			}
+
+			return ResponseEntity.ok(new ApiResponseJust<>("Linea de tiempo del proceso: " + procesoId + ".",
+					HttpStatus.OK.value(), linea));
+
+		} catch (RuntimeException ex) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND)
+					.body(new ApiResponseJust<>(ex.getMessage(), HttpStatus.NOT_FOUND.value(), null));
 		}
 	}
 

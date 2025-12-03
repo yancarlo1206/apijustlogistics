@@ -16,8 +16,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.justlogistics.entity.Proceso;
+import com.justlogistics.repository.ProcesoRepository;
 import com.justlogistics.response.ApiResponseJust;
+import com.justlogistics.service.ClienteService;
 import com.justlogistics.service.ProcesoService;
+import org.springframework.security.core.Authentication;
 
 import jakarta.validation.Valid;
 
@@ -28,8 +31,15 @@ public class ProcesoController {
 	@Autowired
 	private ProcesoService ProcesoService;
 
+	@Autowired
+	private ClienteService clienteService;
+
+	@Autowired
+	private ProcesoRepository procesoRepository;
+
 	@PostMapping
-	public ResponseEntity<ApiResponseJust<?>> guardar(@Valid @RequestBody Proceso request,BindingResult bindingResult) {
+	public ResponseEntity<ApiResponseJust<?>> guardar(@Valid @RequestBody Proceso request,
+			BindingResult bindingResult) {
 		try {
 			if (bindingResult.hasErrors()) {
 				String errorMsg = bindingResult.getFieldError().getDefaultMessage();
@@ -114,6 +124,33 @@ public class ProcesoController {
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 					.body(new ApiResponseJust<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value(), null));
+		}
+	}
+
+	@GetMapping("/listPorCliente")
+	public ResponseEntity<ApiResponseJust<?>> procesosrPorCliente(Authentication authentication) {
+
+		try {
+
+			String username = authentication.getName();
+			Integer clienteId = clienteService.obtenerClienteIdPorUsername(username);
+
+			String nombreCliente = clienteService.obtenerNombreCliente(clienteId);
+
+			List<Proceso> procesos = procesoRepository.findByClienteId(clienteId);
+
+			if (procesos.isEmpty()) {
+				return ResponseEntity
+						.ok(new ApiResponseJust<>("El cliente " + nombreCliente + " no tiene procesos registrados.",
+								HttpStatus.OK.value(), procesos));
+			}
+
+			return ResponseEntity.ok(new ApiResponseJust<>("Lista de procesos del cliente: " + nombreCliente + ".",
+					HttpStatus.OK.value(), procesos));
+
+		} catch (RuntimeException ex) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND)
+					.body(new ApiResponseJust<>(ex.getMessage(), HttpStatus.NOT_FOUND.value(), null));
 		}
 	}
 
