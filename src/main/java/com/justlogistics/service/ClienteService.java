@@ -7,9 +7,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.justlogistics.entity.Cliente;
-import com.justlogistics.entity.Usuario;
 import com.justlogistics.repository.ClienteRepository;
-import com.justlogistics.repository.UsuarioRepository;
+
+
+import jakarta.transaction.Transactional;
 
 @Service
 public class ClienteService {
@@ -18,14 +19,25 @@ public class ClienteService {
 	private ClienteRepository clienteRepository;
 
 	@Autowired
-	private UsuarioRepository usuarioRepository;
+	private AuthService authService;
 
-	public Cliente guardar(Cliente request) {
+	@Transactional
+    public Cliente guardar(Cliente request) {
 
-		request.setFechacreacion(LocalDateTime.now());
-		request.setFechaactualizacion(LocalDateTime.now());
-		return clienteRepository.save(request);
-	}
+        String correo = request.getCorreo();
+        String username = correo.split("@")[0];
+
+        request.setFechacreacion(LocalDateTime.now());
+        request.setFechaactualizacion(LocalDateTime.now());
+        request.setUsername(username);
+
+        Cliente clienteGuardado = clienteRepository.save(request);
+        
+        // Crear usuario
+        authService.crearUserCliente(clienteGuardado);
+
+        return clienteGuardado;
+    }
 
 	public List<Cliente> listar() {
 		return clienteRepository.findAll();

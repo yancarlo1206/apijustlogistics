@@ -28,7 +28,6 @@ public class Cliente {
 	
 	@NotBlank(message = "El NIT es obligatorio")
 	@Size(max=20, min= 2, message = "El NIT debe tener entre 2 y 20 caractéres")
-	@Pattern(regexp = "\\d+", message = "El NIT debe ser numérico.")
 	private String nit;
 	
 	@NotBlank(message = "La razon Social es obligatoria")
@@ -59,6 +58,8 @@ public class Cliente {
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm")
 	@Column(name = "fechaactualizacion")
 	private LocalDateTime fechaactualizacion;
+	
+	private String username;
 	
 
 }
