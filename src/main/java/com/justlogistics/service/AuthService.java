@@ -10,6 +10,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.justlogistics.dto.RegisterRequest;
+import com.justlogistics.entity.Cliente;
 import com.justlogistics.entity.Usuario;
 import com.justlogistics.entity.UsuarioTipo;
 import com.justlogistics.repository.UsuarioRepository;
@@ -36,6 +37,9 @@ public class AuthService {
 
 	@Autowired
 	private BCryptPasswordEncoder passwordEncoder;
+	
+	@Autowired
+	private UsuarioRepository usuarioRepository;
 
 	public String login(String username, String password) {
 
@@ -73,5 +77,26 @@ public class AuthService {
 		
 		userRepository.save(user);
 	}
+	
+	
+	public Usuario crearUserCliente(Cliente cliente) {
+
+        if (usuarioRepository.findByUsername(cliente.getUsername()).isPresent()) {
+            throw new RuntimeException("El usuario con username '" + cliente.getUsername() + "' ya existe.");
+        }
+
+        Usuario usuario = new Usuario();
+        usuario.setUsername(cliente.getUsername());
+        usuario.setCorreo(cliente.getCorreo());
+        usuario.setPassword(passwordEncoder.encode(cliente.getNit())); 
+
+        // Tipo de usuario: 2
+        UsuarioTipo tipoCliente = usuarioTipoRepository.findById(2)
+                .orElseThrow(() -> new RuntimeException("Tipo de usuario cliente no encontrado"));
+
+        usuario.setUsuariotipo(tipoCliente);
+
+        return usuarioRepository.save(usuario);
+    }
 }
 
