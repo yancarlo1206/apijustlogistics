@@ -31,7 +31,7 @@ public class Cliente {
 	private String nit;
 	
 	@NotBlank(message = "La razon Social es obligatoria")
-	@Size(max=25, min= 2, message = "La razon Social  debe tener entre 2 y 25 caractéres")
+	@Size(max=100, min= 2, message = "La razon Social  debe tener entre 2 y 25 caractéres")
 	private String razonsocial;
 	
 	@NotBlank(message = "El nombre de contacto es obligatorio")
