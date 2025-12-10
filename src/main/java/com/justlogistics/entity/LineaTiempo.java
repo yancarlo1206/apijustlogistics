@@ -39,7 +39,7 @@ public class LineaTiempo {
     private Estado estado;
 
 	@NotBlank(message = "La descripcion es obligatoria")
-	@Size(max = 100, min = 2, message = "La descripcion  debe tener entre 2 y 100 caractéres")
+	@Size(max = 300, min = 2, message = "La descripcion  debe tener entre 2 y 100 caractéres")
 	private String descripcion;
 	
 	@NotBlank(message = "La ubicacion es obligatoria")
