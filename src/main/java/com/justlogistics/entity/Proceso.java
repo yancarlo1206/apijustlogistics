@@ -33,7 +33,7 @@ public class Proceso {
     private Cliente cliente;
 
 	@NotBlank(message = "El contenedor es obligatorio")
-	@Size(max = 20, min = 2, message = "El contenedor debe tener entre 2 y 20 caractéres")
+	@Size(max = 100, min = 2, message = "El contenedor debe tener entre 2 y 20 caractéres")
 	private String nombrecontenedor ;
 
 	@NotNull(message = "El Tipo de transporte es obligatorio")
