@@ -8,6 +8,6 @@ import com.justlogistics.entity.Cliente;
 
 public interface ClienteRepository extends JpaRepository<Cliente, Integer> {
 	
-	Optional<Cliente> findByNit(String username);
+	Optional<Cliente> findByUsername(String username);
 
 }

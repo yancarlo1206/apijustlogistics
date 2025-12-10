@@ -80,7 +80,7 @@ public class ClienteService {
 
 	public Integer obtenerClienteIdPorUsername(String username) {
 
-		Cliente cliente = clienteRepository.findByNit(username)
+		Cliente cliente = clienteRepository.findByUsername(username)
 				.orElseThrow(() -> new RuntimeException("Cliente no encontrado: " + username));
 
 		return cliente.getId();
